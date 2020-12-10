@@ -8,6 +8,7 @@
 #include <moveit/planning_scene/planning_scene.h>
 #include <moveit/planning_scene_interface/planning_scene_interface.h>
 #include <moveit/move_group_interface/move_group_interface.h>
+#include "trampolin.h"
 
 namespace py = pybind11;
 using namespace moveit::task_constructor;
@@ -96,7 +97,7 @@ void export_core(pybind11::module& m) {
 		     py::keep_alive<0, 1>())
 		;
 
-	auto stage = properties::class_<Stage>(m, "Stage")
+	auto stage = properties::class_<Stage, PyStage<>>(m, "Stage")
 		.property<double>("timeout")
 		.property<std::string>("marker_ns")
 		.def_property("forwarded_properties", getForwardedProperties, setForwardedProperties)
@@ -123,8 +124,16 @@ void export_core(pybind11::module& m) {
 		.value("FORWARD", PropagatingEitherWay::FORWARD)
 		.value("BACKWARD", PropagatingEitherWay::BACKWARD);
 
-	py::class_<MonitoringGenerator, Stage>(m, "MonitoringGenerator")
-		.def("setMonitoredStage", &MonitoringGenerator::setMonitoredStage);
+	properties::class_<Generator, Stage, PyGenerator<>>(m, "Generator")
+		.def(py::init<const std::string&>(), py::arg("name") = std::string("generator"))
+		.def("canCompute", &Generator::canCompute)
+		.def("compute", &Generator::compute)
+		;
+
+	properties::class_<MonitoringGenerator, Generator, PyMonitoringGenerator<>>(m, "MonitoringGenerator")
+		.def(py::init<const std::string&>(), py::arg("name") = std::string("generator"))
+		.def("setMonitoredStage", &MonitoringGenerator::setMonitoredStage)
+		;
 
 	py::class_<ContainerBase, Stage>(m, "ContainerBase")
 		.def("add", &ContainerBase::add)
