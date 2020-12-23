@@ -1,16 +1,5 @@
+#include "stages.h"
 #include <moveit/python/task_constructor/properties.h>
-#include <moveit/task_constructor/stages/modify_planning_scene.h>
-#include <moveit/task_constructor/stages/current_state.h>
-#include <moveit/task_constructor/stages/fixed_state.h>
-#include <moveit/task_constructor/stages/compute_ik.h>
-#include <moveit/task_constructor/stages/move_to.h>
-#include <moveit/task_constructor/stages/move_relative.h>
-#include <moveit/task_constructor/stages/connect.h>
-#include <moveit/task_constructor/stages/fix_collision_objects.h>
-#include <moveit/task_constructor/stages/generate_grasp_pose.h>
-#include <moveit/task_constructor/stages/generate_pose.h>
-#include <moveit/task_constructor/stages/pick.h>
-#include <moveit/task_constructor/stages/simple_grasp.h>
 #include <moveit_msgs/PlanningScene.h>
 #include <pybind11/stl.h>
 

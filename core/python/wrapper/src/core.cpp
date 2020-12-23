@@ -1,14 +1,11 @@
+#include "core.h"
 #include <moveit/python/task_constructor/properties.h>
-#include <moveit/task_constructor/stage.h>
-#include <moveit/task_constructor/container.h>
 #include <moveit/task_constructor/container_p.h>
-#include <moveit/task_constructor/task.h>
 #include <moveit_task_constructor_msgs/Solution.h>
 
 #include <moveit/planning_scene/planning_scene.h>
 #include <moveit/planning_scene_interface/planning_scene_interface.h>
 #include <moveit/move_group_interface/move_group_interface.h>
-#include "trampoline.h"
 
 namespace py = pybind11;
 using namespace moveit::task_constructor;
