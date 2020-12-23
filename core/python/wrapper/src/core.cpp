@@ -114,7 +114,10 @@ void export_core(pybind11::module& m) {
 
 
 	auto either_way = py::class_<PropagatingEitherWay, Stage>(m, "PropagatingEitherWay")
-		.def("restrictDirection", &PropagatingEitherWay::restrictDirection);
+		.def("restrictDirection", &PropagatingEitherWay::restrictDirection)
+		.def("computeForward", &PropagatingEitherWay::computeForward)
+		.def("computeBackward", &PropagatingEitherWay::computeBackward)
+		;
 
 	py::enum_<PropagatingEitherWay::Direction>(either_way, "Direction")
 		.value("AUTO", PropagatingEitherWay::AUTO)
@@ -139,10 +142,15 @@ void export_core(pybind11::module& m) {
 		.def("compatible", &PubConnecting::compatible)
 		;
 
-	py::class_<ContainerBase, Stage>(m, "ContainerBase")
+	py::class_<ContainerBase, Stage, PyContainerBase<>>(m, "ContainerBase")
 		.def("add", &ContainerBase::add)
 		.def("insert", &ContainerBase::insert, py::arg("stage"), py::arg("before") = -1)
+		.def("remove", static_cast<Stage::pointer (ContainerBase::*)(int)>(&ContainerBase::remove))
+		.def("remove", static_cast<Stage::pointer (ContainerBase::*)(Stage*)>(&ContainerBase::remove))
 		.def("clear", &ContainerBase::clear)
+		.def("canCompute", &ContainerBase::canCompute)
+		.def("compute", &ContainerBase::compute)
+		.def("onNewSolution", &ContainerBase::onNewSolution)
 		.def("__len__", &ContainerBase::numChildren)
 		.def("__getitem__", [](const ContainerBase &c, const std::string &name) -> Stage* {
 			Stage* child = c.findChild(name);
