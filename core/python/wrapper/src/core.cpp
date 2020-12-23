@@ -130,6 +130,13 @@ void export_core(pybind11::module& m) {
 	properties::class_<MonitoringGenerator, Generator, PyMonitoringGenerator<>>(m, "MonitoringGenerator")
 		.def(py::init<const std::string&>(), py::arg("name") = std::string("generator"))
 		.def("setMonitoredStage", &MonitoringGenerator::setMonitoredStage)
+		.def("onNewSolution", &PubMonitoringGenerator::onNewSolution)
+		;
+
+	properties::class_<Connecting, Stage, PyConnecting<>>(m, "Connecting")
+		.def(py::init<const std::string&>(), py::arg("name") = std::string("connecting"))
+		.def("compute", &Connecting::compute)
+		.def("compatible", &PubConnecting::compatible)
 		;
 
 	py::class_<ContainerBase, Stage>(m, "ContainerBase")

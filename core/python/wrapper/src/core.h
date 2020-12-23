@@ -34,7 +34,14 @@ class PyMonitoringGenerator : public PyGenerator<T>
 {
 public:
 	using PyGenerator<T>::PyGenerator;
+
 	void onNewSolution(const SolutionBase& s) override { PYBIND11_OVERRIDE_PURE(void, T, onNewSolution, s); }
+};
+
+class PubMonitoringGenerator : public MonitoringGenerator
+{
+public:
+	using MonitoringGenerator::onNewSolution;
 };
 
 template <class T = PropagatingEitherWay>
@@ -42,20 +49,10 @@ class PyPropagatingEitherWay : public PyStage<T>
 {
 public:
 	using PyStage<T>::PyStage;
-};
 
-template <class T = PropagatingBackward>
-class PyPropagatingBackward : public PyPropagatingEitherWay<T>
-{
-public:
-	using PyPropagatingEitherWay<T>::PyPropagatingEitherWay;
-};
+	void computeForward(const InterfaceState& from) override { PYBIND11_OVERRIDE_PURE(void, T, computeForward, from); }
 
-template <class T = PropagatingForward>
-class PyPropagatingForward : public PyPropagatingEitherWay<T>
-{
-public:
-	using PyPropagatingEitherWay<T>::PyPropagatingEitherWay;
+	void computeBackward(const InterfaceState& to) override { PYBIND11_OVERRIDE_PURE(void, T, computeBackward, to); }
 };
 
 template <class T = Connecting>
@@ -63,9 +60,20 @@ class PyConnecting : public PyStage<T>
 {
 public:
 	using PyStage<T>::PyStage;
+
 	void compute(const InterfaceState& from, const InterfaceState& to) override {
 		PYBIND11_OVERRIDE_PURE(void, T, compute, from, to);
 	}
+
+	bool compatible(const InterfaceState& from_state, const InterfaceState& to_state) const override {
+		PYBIND11_OVERRIDE(bool, T, compatible, from_state, to_state);
+	}
+};
+
+class PubConnecting : public Connecting
+{
+public:
+	using Connecting::compatible;
 };
 
 template <class T = ContainerBase>
@@ -87,55 +95,6 @@ public:
 	void compute() override { PYBIND11_OVERRIDE_PURE(void, T, compute, ); }
 
 	void onNewSolution(const SolutionBase& s) override { PYBIND11_OVERRIDE_PURE(void, T, onNewSolution, s); }
-};
-
-template <class T = SerialContainer>
-class PySerialContainer : public PyContainerBase<T>
-{
-public:
-	using PyContainerBase<T>::PyContainerBase;
-};
-
-template <class T = ParallelContainerBase>
-class PyParallelContainerBase : public PyContainerBase<T>
-{
-public:
-	using PyContainerBase<T>::PyContainerBase;
-};
-
-template <class T = WrapperBase>
-class PyWrapperBase : public PyParallelContainerBase<T>
-{
-public:
-	using PyParallelContainerBase<T>::PyParallelContainerBase;
-};
-
-template <class T = Alternatives>
-class PyAlternative : public PyParallelContainerBase<T>
-{
-public:
-	using PyParallelContainerBase<T>::PyParallelContainerBase;
-};
-
-template <class T = Fallbacks>
-class PyFallbacks : public PyParallelContainerBase<T>
-{
-public:
-	using PyParallelContainerBase<T>::PyParallelContainerBase;
-};
-
-template <class T = Merger>
-class PyMerger : public PyParallelContainerBase<T>
-{
-public:
-	using PyParallelContainerBase<T>::PyParallelContainerBase;
-};
-
-template <class T = Task>
-class PyTask : public PyWrapperBase<T>
-{
-public:
-	using PyWrapperBase<T>::PyWrapperBase;
 };
 
 }  // namespace task_constructor
